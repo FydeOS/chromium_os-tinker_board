@@ -1,0 +1,5 @@
+USE="hardfp neon"
+USE="${USE} kernel-4_4 device_tree"
+USE="${USE} -opengl opengles"
+USE="${USE} bluetooth"
+USE="${USE} allow_consumer_kiosk"
