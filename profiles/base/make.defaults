@@ -3,3 +3,11 @@ USE="${USE} kernel-4_4 device_tree"
 USE="${USE} -opengl opengles"
 USE="${USE} bluetooth"
 USE="${USE} allow_consumer_kiosk"
+
+ACCEPT_LICENSE="Google-TOS"
+
+# Turn on the video cards this board uses.
+VIDEO_CARDS="rockchip"
+
+# Allow login on serial console
+TTY_CONSOLE="ttyS2"
