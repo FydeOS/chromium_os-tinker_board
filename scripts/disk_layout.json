@@ -1,0 +1,31 @@
+{
+  "_comment": "See http://www.chromium.org/chromium-os/developer-guide/disk-layout-format",
+  "metadata":{
+    "rootdev_base": "/sys/class/block/mmcblk0"
+  },
+  "parent": "legacy_disk_layout.json",
+  "layouts": {
+    # common is the standard layout template.
+    "common": [
+      {
+        # Enlarge ESP, kernel files need to be there for u-boot
+        "num": 12,
+        "size": "50 MiB"
+      },
+      {
+        "num": 5,
+        "fs_size": "2000 MiB",
+        "size": "2048 MiB"
+      },
+      {
+        "num": 3,
+        "fs_size": "2000 MiB",
+        "size": "2048 MiB"
+      },
+      {
+        "num": 1,
+        "size": "2560 MiB"
+      }
+    ]
+  }
+}
