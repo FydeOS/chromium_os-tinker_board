@@ -1,11 +1,11 @@
 EAPI=4
 
-EGIT_BRANCH="master"
-EGIT_REPO_URI="git://git.denx.de/u-boot.git"
-EGIT_COMMIT="4f58002013ba1e89eb8fda015ff495bd37cd4016"
+EGIT_BRANCH="release"
+EGIT_REPO_URI="https://github.com/TinkerBoard/debian_u-boot"
+EGIT_COMMIT="135bc937d6e0d5d2b4878219c46f895c172867bd"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
-inherit git-2 cros-workon
+inherit git-2 cros-workon toolchain-funcs flag-o-matic
 
 DESCRIPTION="U-Boot boot laoder For Asus Tinker Board"
 KEYWORDS="-* arm"
@@ -22,14 +22,26 @@ src_unpack() {
 	git-2_src_unpack
 }
 
+umake() {
+  # Add `ARCH=` to reset ARCH env and let U-Boot choose it.
+  ARCH= emake "${COMMON_MAKE_FLAGS[@]}" "$@"
+}
+
 src_configure() {
-	emake tinker-rk3288_defconfig
+  export LDFLAGS=$(raw-ldflags)
+  tc-export BUILD_CC
+  CROSS_PREFIX="${CHOST}-"
+  COMMON_MAKE_FLAGS=(
+      "CROSS_COMPILE=${CROSS_PREFIX}"
+      HOSTSTRIP=true
+      -k
+      )
+  umake distclean
+	umake tinker-rk3288_defconfig
 }
 
 src_compile() {
-	export ARCH=arm
-	export CROSS_COMPILE=armv7a-cros-linux-gnueabi-
-	emake
+	umake all
 	./tools/mkimage -n rk3288 -T rksd -d spl/u-boot-spl-dtb.bin tinker-uboot.img
 	cat u-boot-dtb.bin >> tinker-uboot.img
 }

@@ -1,0 +1,30 @@
+# Don't allow autosuspend for things on the dwc2 controllers
+#
+# Autosuspend sorta works on dwc2 but sometimes causes the device to be reset.
+# In some cases this is intentional due to the "remote wakeup" problem on the
+# dwc2 host-only port (see the "snps,need-phy-full-reset-on-wake" property)
+# but in other cases it looks like something about the suspend sequence in dwc2
+# and/or the PHY isn't quite right.
+#
+# In general Chrome OS doesn't use autosuspend much and it's turned off for
+# almost all USB devices.  Notably the only devices that have autosuspend
+# enabled are:
+# - webcams
+# - security keys
+# - usb peripherals that are expected to be connected internally
+# See power manager's "udev/gen_autosuspend_rules.py"
+#
+# If we disable autosuspend then the main downside is that security keys will
+# take up more power.  That's not so good for laptops, but it's unlikely to
+# be a big negative for Chromeboxes.
+#
+# We'll include this udev rule on any "ac_only" devices.  That will make them
+# work a little better with webcams in particular (one of the few things you
+# might plug in that had autosuspend turned on).  It's unfortunate that we
+# can't do something that would fix everyone with no compromises, but this is
+# better than nothing.  If nothing else it's not really expected that someone
+# would plug a webcam into their laptop.
+
+ACTION=="add|change", KERNELS=="ff540000.usb", DRIVER!="dwc2", ATTR{product}!="DWC OTG Controller", ATTR{power/control}="on"
+ACTION=="add|change", KERNELS=="ff580000.usb", DRIVER!="dwc2", ATTR{product}!="DWC OTG Controller", ATTR{power/control}="on"
+

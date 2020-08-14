@@ -1,10 +1,11 @@
 USE="hardfp neon"
-USE="${USE} kernel-4_4 device_tree"
+USE="${USE} kernel-4_19 device_tree"
 USE="${USE} -opengl opengles"
 USE="${USE} bluetooth"
 USE="${USE} allow_consumer_kiosk"
+USE="${USE} gpu_sandbox_start_early rk32 watchdog direncryption v4l2_codec"
 
-ACCEPT_LICENSE="Google-TOS"
+ACCEPT_LICENSE="*"
 
 # Turn on the video cards this board uses.
 VIDEO_CARDS="rockchip"

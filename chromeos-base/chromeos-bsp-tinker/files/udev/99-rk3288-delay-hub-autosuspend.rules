@@ -1,0 +1,38 @@
+# Slow down autosuspend for hubs under dwc2 host port
+#
+# Autosuspend on dwc2's "host" port is pretty broken.  When we see a "remote
+# wakeup" we have to fully reset the port.
+#
+# If we disable autosuspend then the main downside is that security keys will
+# take up more power.  That's not so good for laptops.  ...so we don't do it.
+# We don't actually allow autosuspend for too many devices anyway.
+#
+# One type of thing that _does_ get autosuspend turned on is USB hubs.  That
+# means if you plug in an empty USB hub you'll see the "remote wakeup" when
+# you plug the first device in.  Though a bit gross, this isn't a huge deal.
+# After all you're just re-enumerating an empty hub.
+#
+# ...but...
+#
+# It turns out that for at least one hub I looked at (an Amazon Basics one)
+# the device goes back and autosuspends again quickly after we reset it.
+# Thus we get into a loop that looks like this:
+#
+# 1. Plug in empty hub.
+# 2. Empty hub autosuspends.
+# 3. Plug in new device.
+# 4. Hub does a remote wakeup to us because there's a device.
+# 5. We wee the remote wakeup and reset (looks like plug / unplug of the hub).
+# 6. Enumerate the hub.
+# 7. Before we can enumerate the device in the hub, hub autosuspends.
+# 8. Hub realizes that there's a device and does a remote wakeup.
+# 9. Goto step #5
+#
+# We can _sometimes_ get out of the loop if we win the race and enumerate the
+# device before the hub suspends.
+#
+# Let's make the race a little more likely to be won by giving ourselves
+# 1 second before we autosuspend things that originally were going to
+# autosuspend after 0 seconds.
+
+ACTION=="add|change", KERNELS=="ff540000.usb", ATTR{product}!="DWC OTG Controller", ATTR{bDeviceClass}=="09", ATTR{power/autosuspend_delay_ms}=="0", ATTR{power/autosuspend_delay_ms}="1000"

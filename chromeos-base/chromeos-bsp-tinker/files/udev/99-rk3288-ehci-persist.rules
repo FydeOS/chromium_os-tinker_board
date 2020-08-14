@@ -1,0 +1,9 @@
+# Workaround: On RK3288 the EHCI controller is quirky and requires
+# USB devices to be reset on resume. To prevent userspace from failing
+# after this happens, persist needs to be enabled on devices connected
+# to this controller.
+#
+# Note that this is safe, because only internal devices use this controller.
+
+ACTION=="add|change", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ENV{ID_MODEL}!="EHCI_Host_Controller", DRIVERS=="ehci-platform", ATTR{power/persist}="1"
+

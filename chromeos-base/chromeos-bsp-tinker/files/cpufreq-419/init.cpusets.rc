@@ -1,0 +1,20 @@
+# Copyright 2019 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+
+on early-boot
+    # Mount SchedTune controller and create tuning groups.
+    mkdir /dev/stune
+    mount cgroup none /dev/stune schedtune
+    mkdir /dev/stune/foreground
+    chown system system /dev/stune
+    chown system system /dev/stune/foreground
+    chown system system /dev/stune/tasks
+    chown system system /dev/stune/foreground/tasks
+    chmod 0664 /dev/stune/tasks
+    chmod 0664 /dev/stune/foreground/tasks
+
+    # Foreground tasks get schedule boost
+    write /dev/stune/foreground/schedtune.boost 20
+    write /dev/stune/foreground/schedtune.prefer_idle 1

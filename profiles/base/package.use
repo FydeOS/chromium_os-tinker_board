@@ -1,1 +1,5 @@
 sys-apps/gptfdisk -ncurses
+chromeos-base/common-assets -tts
+chromeos-base/chromeos-chrome nacl cfi fonts v4lplugin tpm_fallback
+sys-kernel/chromeos-kernel-4_19 -clang -lld
+media-libs/libv4lplugins rockchip
